@@ -9,9 +9,29 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+const session = require("express-session");
+const flash = require("express-flash");
+const MongoStore = require("connect-mongo");
+require("dotenv").config();
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use(
+  session({
+    secret: "supersecretkey",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: "sessions",
+    }),
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
+  })
+);
+
+app.use(flash());
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -21,6 +41,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+const authRoutes = require("./routes/auth");
+app.use("/", authRoutes);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
