@@ -1,12 +1,14 @@
+<h1>Admin Panel</h1>
+
 <h2>Add Program</h2>
-<form method="POST" action="/admin/programs">
+<form action="/admin/programs" method="POST">
   <input type="text" name="name" placeholder="Program Name" required>
-  <input type="text" name="code" placeholder="Program Code" required>
+  <input type="text" name="code" placeholder="Code (e.g., BSIT)" required>
   <button type="submit">Add Program</button>
 </form>
 
 <h2>Add Subject</h2>
-<form method="POST" action="/admin/subjects">
+<form action="/admin/subjects" method="POST">
   <input type="text" name="code" placeholder="Subject Code" required>
   <input type="text" name="title" placeholder="Subject Title" required>
   <input type="number" name="units" placeholder="Units" required>
@@ -19,16 +21,38 @@
 </form>
 
 <h2>Add Section</h2>
-<form method="POST" action="/admin/sections">
+<form action="/admin/sections" method="POST">
   <input type="text" name="name" placeholder="Section Name" required>
   <select name="subjectId">
     <% subjects.forEach(s => { %>
       <option value="<%= s._id %>"><%= s.code %> - <%= s.title %></option>
     <% }) %>
   </select>
-  <input type="text" name="instructor" placeholder="Instructor Name" required>
-  <input type="text" name="day" placeholder="Day (e.g., Monday)" required>
+  <input type="text" name="instructor" placeholder="Instructor" required>
+  <input type="text" name="day" placeholder="Day" required>
   <input type="time" name="start" required>
   <input type="time" name="end" required>
   <button type="submit">Add Section</button>
 </form>
+
+<h2>Existing Data</h2>
+<h3>Programs:</h3>
+<ul>
+  <% programs.forEach(p => { %>
+    <li><%= p.name %> (<%= p.code %>)</li>
+  <% }) %>
+</ul>
+
+<h3>Subjects:</h3>
+<ul>
+  <% subjects.forEach(s => { %>
+    <li><%= s.code %> - <%= s.title %> (<%= s.program.name %>)</li>
+  <% }) %>
+</ul>
+
+<h3>Sections:</h3>
+<ul>
+  <% sections.forEach(sec => { %>
+    <li><%= sec.name %> | <%= sec.subject.title %> | <%= sec.schedule.day %> <%= sec.schedule.start %>–<%= sec.schedule.end %></li>
+  <% }) %>
+</ul>

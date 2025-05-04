@@ -20,7 +20,6 @@ exports.addSubject = async (req, res) => {
     title: req.body.title,
     units: req.body.units,
     program: req.body.programId,
-    prerequisite: req.body.prerequisite || null,
   });
   res.redirect("/admin");
 };
