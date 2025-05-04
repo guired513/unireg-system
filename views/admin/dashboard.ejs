@@ -1,0 +1,34 @@
+<h2>Add Program</h2>
+<form method="POST" action="/admin/programs">
+  <input type="text" name="name" placeholder="Program Name" required>
+  <input type="text" name="code" placeholder="Program Code" required>
+  <button type="submit">Add Program</button>
+</form>
+
+<h2>Add Subject</h2>
+<form method="POST" action="/admin/subjects">
+  <input type="text" name="code" placeholder="Subject Code" required>
+  <input type="text" name="title" placeholder="Subject Title" required>
+  <input type="number" name="units" placeholder="Units" required>
+  <select name="programId">
+    <% programs.forEach(p => { %>
+      <option value="<%= p._id %>"><%= p.name %></option>
+    <% }) %>
+  </select>
+  <button type="submit">Add Subject</button>
+</form>
+
+<h2>Add Section</h2>
+<form method="POST" action="/admin/sections">
+  <input type="text" name="name" placeholder="Section Name" required>
+  <select name="subjectId">
+    <% subjects.forEach(s => { %>
+      <option value="<%= s._id %>"><%= s.code %> - <%= s.title %></option>
+    <% }) %>
+  </select>
+  <input type="text" name="instructor" placeholder="Instructor Name" required>
+  <input type="text" name="day" placeholder="Day (e.g., Monday)" required>
+  <input type="time" name="start" required>
+  <input type="time" name="end" required>
+  <button type="submit">Add Section</button>
+</form>

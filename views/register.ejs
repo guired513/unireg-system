@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+</head>
+<body>
+  <h1>Register</h1>
+  <% if (messages.error) { %>
+    <p style="color:red;"><%= messages.error %></p>
+  <% } %>
+  <% if (messages.info) { %>
+    <p style="color:green;"><%= messages.info %></p>
+  <% } %>
+
+  <form action="/register" method="POST">
+    <input type="text" name="name" placeholder="Full Name" required><br>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <select name="role" required>
+      <option value="student">Student</option>
+      <option value="faculty">Faculty</option>
+      <option value="admin">Admin</option>
+      <option value="registrar">Registrar</option>
+      <option value="accounting">Accounting</option>
+    </select><br><br>
+    <button type="submit">Register</button>
+  </form>
+</body>
+</html>
