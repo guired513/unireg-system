@@ -3,6 +3,7 @@
 const Program = require("../models/Program");
 const Subject = require("../models/Subject");
 const Section = require("../models/Section");
+const User = require("../models/User");
 
 exports.getDashboard = async (req, res) => {
   const programs = await Program.find();
@@ -40,7 +41,7 @@ exports.addSection = async (req, res) => {
   res.redirect("/admin");
 };
 
-const User = require("../models/User");
+
 
 exports.getUsers = async (req, res) => {
   const users = await User.find();
@@ -68,5 +69,47 @@ exports.updateUserRole = async (req, res) => {
   } catch (error) {
     console.error("Error updating user role:", error);
     res.status(500).send("Server Error");
+  }
+};
+
+
+exports.updateUserRole = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const newRole = req.body.role;
+
+    await User.findByIdAndUpdate(userId, { role: newRole });
+    req.flash("success_msg", "User role updated successfully.");
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    res.status(500).send("Error updating user role.");
+  }
+};
+exports.toggleUserStatus = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const updatedStatus = user.status === "Active" ? "Inactive" : "Active";
+
+    await User.findByIdAndUpdate(req.params.id, { status: updatedStatus });
+    req.flash("success_msg", "User status updated.");
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.error("Error toggling status:", error);
+    res.status(500).send("Error updating user status.");
+  }
+};
+
+exports.updateUserRole = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const newRole = req.body.role;
+
+    await User.findByIdAndUpdate(userId, { role: newRole });
+    req.flash("success_msg", "User role updated successfully.");
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    res.status(500).send("Error updating user role.");
   }
 };

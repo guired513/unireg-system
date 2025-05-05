@@ -49,6 +49,7 @@ exports.postRegister = async (req, res) => {
 exports.postLogin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
+
   if (!user) {
     req.flash("error", "Invalid credentials");
     return res.redirect("/login");
@@ -60,8 +61,21 @@ exports.postLogin = async (req, res) => {
     return res.redirect("/login");
   }
 
+  // ✅ Store the user in session
   req.session.user = user;
-  res.redirect("/dashboard");
+
+  // ✅ Redirect based on role
+  if (user.role === "superadmin") {
+    return res.redirect("/admin/dashboard");
+  } else if (user.role === "faculty") {
+    return res.redirect("/faculty/sections");
+  } else if (user.role === "student") {
+    return res.redirect("/student/enroll");
+  } else if (user.role === "registrar") {
+    return res.redirect("/registrar/dashboard");
+  } else {
+    return res.redirect("/"); // default fallback
+  }
 };
 
 exports.logout = (req, res) => {

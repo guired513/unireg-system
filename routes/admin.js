@@ -14,5 +14,9 @@ router.get("/users", requireLogin, requireRole("superadmin"), adminController.ge
 router.post("/users/update-role", requireLogin, requireRole("superadmin"), adminController.updateRole);
 router.post("/users/toggle-status", requireLogin, requireRole("superadmin"), adminController.toggleStatus);
 
+router.post("/update/:id", adminController.updateUserRole);
+router.post("/toggle-status/:id", adminController.toggleUserStatus);
+
+router.post("/update/:id", adminController.updateUserRole);
 
 module.exports = router;

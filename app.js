@@ -7,6 +7,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+
+
 var app = express();
 
 const session = require("express-session");
@@ -65,6 +67,8 @@ app.use("/student", studentRoutes);
 
 
 
+const registrarRoutes = require("./routes/registrar");
+app.use("/registrar", registrarRoutes);
 
 const indexRoutes = require("./routes/index");
 app.use("/", indexRoutes);
