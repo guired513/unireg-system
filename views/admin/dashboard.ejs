@@ -1,58 +1,60 @@
-<h1>Admin Panel</h1>
-
-<h2>Add Program</h2>
-<form action="/admin/programs" method="POST">
-  <input type="text" name="name" placeholder="Program Name" required>
-  <input type="text" name="code" placeholder="Code (e.g., BSIT)" required>
-  <button type="submit">Add Program</button>
-</form>
-
-<h2>Add Subject</h2>
-<form action="/admin/subjects" method="POST">
-  <input type="text" name="code" placeholder="Subject Code" required>
-  <input type="text" name="title" placeholder="Subject Title" required>
-  <input type="number" name="units" placeholder="Units" required>
-  <select name="programId">
-    <% programs.forEach(p => { %>
-      <option value="<%= p._id %>"><%= p.name %></option>
-    <% }) %>
-  </select>
-  <button type="submit">Add Subject</button>
-</form>
-
-<h2>Add Section</h2>
-<form action="/admin/sections" method="POST">
-  <input type="text" name="name" placeholder="Section Name" required>
-  <select name="subjectId">
-    <% subjects.forEach(s => { %>
-      <option value="<%= s._id %>"><%= s.code %> - <%= s.title %></option>
-    <% }) %>
-  </select>
-  <input type="text" name="instructor" placeholder="Instructor" required>
-  <input type="text" name="day" placeholder="Day" required>
-  <input type="time" name="start" required>
-  <input type="time" name="end" required>
-  <button type="submit">Add Section</button>
-</form>
-
-<h2>Existing Data</h2>
-<h3>Programs:</h3>
-<ul>
-  <% programs.forEach(p => { %>
-    <li><%= p.name %> (<%= p.code %>)</li>
-  <% }) %>
-</ul>
-
-<h3>Subjects:</h3>
-<ul>
-  <% subjects.forEach(s => { %>
-    <li><%= s.code %> - <%= s.title %> (<%= s.program.name %>)</li>
-  <% }) %>
-</ul>
-
-<h3>Sections:</h3>
-<ul>
-  <% sections.forEach(sec => { %>
-    <li><%= sec.name %> | <%= sec.subject.title %> | <%= sec.schedule.day %> <%= sec.schedule.start %>–<%= sec.schedule.end %></li>
-  <% }) %>
-</ul>
+<div class="container-fluid">
+  <h1 class="mb-4">Superadmin Dashboard</h1>
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card text-bg-primary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Total Users</h5>
+          <p class="card-text fs-4"><%= totalUsers %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-bg-success mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Active Students</h5>
+          <p class="card-text fs-4"><%= totalStudents %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-bg-warning mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Faculty Members</h5>
+          <p class="card-text fs-4"><%= totalFaculty %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-bg-info mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Registrars</h5>
+          <p class="card-text fs-4"><%= totalRegistrars %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card p-4 shadow-sm">
+        <h5 class="mb-3">User Overview</h5>
+        <canvas id="userChart" height="100"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('userChart').getContext('2d');
+  const userChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Students', 'Faculty', 'Registrars'],
+      datasets: [{
+        label: 'User Distribution',
+        data: [<%= totalStudents %>, <%= totalFaculty %>, <%= totalRegistrars %>],
+        backgroundColor: ['#0d6efd', '#198754', '#ffc107']
+      }]
+    }
+  });
+</script>

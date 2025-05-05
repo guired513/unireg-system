@@ -1,30 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-</head>
-<body>
-  <h1>Login</h1>
-
-  <% if (messages.error) { %>
-    <p style="color:red;"><%= messages.error %></p>
-  <% } %>
-
-  <% if (messages.info) { %>
-    <p style="color:green;"><%= messages.info %></p>
-  <% } %>
-
-  <form method="POST" action="/login">
-    <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
-
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
-
-    <button type="submit">Login</button>
-  </form>
-
-  <p>Don't have an account? <a href="/register">Register here</a></p>
-</body>
-</html>
+<div class="d-flex justify-content-center">
+  <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
+    <h2 class="text-center mb-4">Login</h2>
+    <form method="POST" action="/login">
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+      <div class="mt-3 text-center">
+        <span>Don't have an account? <a href="/register">Register here</a></span>
+      </div>
+    </form>
+  </div>
+</div>

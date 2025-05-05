@@ -58,3 +58,15 @@ exports.toggleStatus = async (req, res) => {
   await user.save();
   res.redirect("/admin/users");
 };
+
+// controllers/adminController.js
+exports.updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    await User.findByIdAndUpdate(req.params.id, { role });
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    res.status(500).send("Server Error");
+  }
+};

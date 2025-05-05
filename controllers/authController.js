@@ -10,14 +10,38 @@ exports.getRegister = (req, res) => {
 };
 
 exports.postRegister = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, confirmPassword } = req.body;
+
+  if (password !== confirmPassword) {
+    req.flash("error", "Passwords do not match.");
+    return res.redirect("/register");
+  }
+
   try {
-    const newUser = new User({ name, email, password, role });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      req.flash("error", "Email already registered.");
+      return res.redirect("/register");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // ✅ Place this block here:
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: "student", // 🔐 force default role
+    });
+
     await newUser.save();
-    req.flash("info", "Registration successful. Please log in.");
+
+    req.flash("success", "Registered successfully. Please log in.");
     res.redirect("/login");
+
   } catch (err) {
-    req.flash("error", "User already exists.");
+    console.error(err);
+    req.flash("error", "Registration failed.");
     res.redirect("/register");
   }
 };

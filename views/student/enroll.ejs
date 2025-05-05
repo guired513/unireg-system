@@ -1,36 +1,17 @@
-<h1>Enroll in a Section</h1>
-
-<% if (messages.error) { %>
-  <p style="color:red;"><%= messages.error %></p>
-<% } %>
-<% if (messages.info) { %>
-  <p style="color:green;"><%= messages.info %></p>
-<% } %>
-
-<h2>Available Sections</h2>
-<ul>
-  <% sections.forEach(section => { %>
-    <li>
-      <strong><%= section.subject.code %></strong> - <%= section.subject.title %><br>
-      Section: <%= section.name %><br>
-      Instructor: <%= section.instructor.name %><br>
-      Time: <%= section.schedule.day %> | <%= section.schedule.start %> – <%= section.schedule.end %><br>
-      <form action="/student/enroll" method="POST">
-        <input type="hidden" name="sectionId" value="<%= section._id %>">
-        <button type="submit">Enroll</button>
-      </form>
-    </li>
-  <% }) %>
-</ul>
-
-<h2>My Enrollments</h2>
-<ul>
-  <% enrolled.forEach(en => { %>
-    <li>
-      <%= en.section.subject.code %> - <%= en.section.subject.title %><br>
-      Section: <%= en.section.name %><br>
-      Instructor: <%= en.section.instructor.name %><br>
-      Schedule: <%= en.section.schedule.day %> | <%= en.section.schedule.start %> – <%= en.section.schedule.end %>
-    </li>
-  <% }) %>
-</ul>
+<h2 class="mb-4">My Enrollments</h2>
+<div class="card shadow-sm p-4">
+  <% if (subjects.length > 0) { %>
+    <ul class="list-group">
+      <% subjects.forEach(sub => { %>
+        <li class="list-group-item d-flex justify-content-between">
+          <%= sub.code %> - <%= sub.name %>
+          <form action="/student/enroll/<%= sub._id %>" method="POST">
+            <button type="submit" class="btn btn-sm btn-success">Enroll</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No available subjects at this time.</p>
+  <% } %>
+</div>
