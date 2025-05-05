@@ -7,9 +7,13 @@ const userSchema = new mongoose.Schema({
   password: String,
   role: {
     type: String,
-    enum: ["student", "faculty", "registrar", "admin", "accounting"],
+    enum: ["student", "faculty", "registrar", "accounting", "admin", "superadmin"],
     default: "student",
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  }
 });
 
 userSchema.pre("save", async function (next) {

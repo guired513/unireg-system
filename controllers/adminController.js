@@ -1,3 +1,5 @@
+
+
 const Program = require("../models/Program");
 const Subject = require("../models/Subject");
 const Section = require("../models/Section");
@@ -36,4 +38,23 @@ exports.addSection = async (req, res) => {
     },
   });
   res.redirect("/admin");
+};
+
+const User = require("../models/User");
+
+exports.getUsers = async (req, res) => {
+  const users = await User.find();
+  res.render("admin/users", { users });
+};
+
+exports.updateRole = async (req, res) => {
+  await User.findByIdAndUpdate(req.body.userId, { role: req.body.role });
+  res.redirect("/admin/users");
+};
+
+exports.toggleStatus = async (req, res) => {
+  const user = await User.findById(req.body.userId);
+  user.isActive = !user.isActive;
+  await user.save();
+  res.redirect("/admin/users");
 };

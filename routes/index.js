@@ -1,5 +1,6 @@
-var express = require('express');
-var router = express.Router();
+
+const express = require("express");
+const router = express.Router();
 
 const { requireLogin } = require("../middleware/auth");
 
@@ -10,7 +11,17 @@ router.get('/', function(req, res, next) {
 });
 
 router.get("/dashboard", requireLogin, (req, res) => {
-  res.render("dashboard", { user: req.session.user });
+  const role = req.session.user?.role;
+  console.log("Logged-in role:", role);
+
+  if (role === "superadmin") return res.redirect("/admin/users");
+  if (role === "admin") return res.redirect("/admin");
+  if (role === "registrar") return res.redirect("/registrar/schedule");
+  if (role === "faculty") return res.redirect("/faculty/sections");
+  if (role === "student") return res.redirect("/student/enroll");
+
+  res.status(403).send("Unknown role or not authorized.");
 });
+
 
 module.exports = router;

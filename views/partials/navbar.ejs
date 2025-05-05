@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">UniReg</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <% if (user) { %>
+            <% if (user.role === 'superadmin') { %>
+              <li class="nav-item"><a class="nav-link" href="/admin/users">User Management</a></li>
+            <% } else if (user.role === 'registrar') { %>
+              <li class="nav-item"><a class="nav-link" href="/registrar/schedule">Scheduling</a></li>
+            <% } else if (user.role === 'student') { %>
+              <li class="nav-item"><a class="nav-link" href="/student/enroll">Enroll</a></li>
+            <% } else if (user.role === 'faculty') { %>
+              <li class="nav-item"><a class="nav-link" href="/faculty/sections">My Sections</a></li>
+            <% } %>
+          <% } %>
+        </ul>
+        <span class="navbar-text text-white me-3">
+          <% if (user) { %> Welcome, <%= user.name %> (<%= user.role %>) <% } %>
+        </span>
+        <% if (user) { %>
+          <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+        <% } else { %>
+          <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+  

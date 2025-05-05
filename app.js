@@ -51,6 +51,20 @@ app.use("/admin", adminRoutes);
 const studentRoutes = require("./routes/student");
 app.use("/student", studentRoutes);
 
+const expressLayouts = require("express-ejs-layouts");
+app.use(expressLayouts);
+app.set("layout extractScripts", true);
+app.set("layout", "layouts/layout");
+
+// Make user globally available to EJS
+app.use((req, res, next) => {
+  res.locals.user = req.session.user;
+  next();
+});
+
+
+const indexRoutes = require("./routes/index");
+app.use("/", indexRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
