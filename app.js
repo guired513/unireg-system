@@ -48,6 +48,9 @@ app.use("/", authRoutes);
 const adminRoutes = require("./routes/admin");
 app.use("/admin", adminRoutes);
 
+const studentRoutes = require("./routes/student");
+app.use("/student", studentRoutes);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
