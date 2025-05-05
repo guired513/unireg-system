@@ -1,22 +1,14 @@
+// routes/admin.js
+
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminController");
-const { requireLogin, requireRole } = require("../middleware/auth");
+const { requireLogin, checkRole } = require("../middleware/auth");
 
-router.get("/", requireLogin, requireRole("admin"), adminController.getDashboard);
-router.post("/programs", requireLogin, requireRole("admin"), adminController.addProgram);
-router.post("/subjects", requireLogin, requireRole("admin"), adminController.addSubject);
-router.post("/sections", requireLogin, requireRole("admin"), adminController.addSection);
-
-router.post("/update/:id", adminController.updateUserRole); // <== this must exist
-
-router.get("/users", requireLogin, requireRole("superadmin"), adminController.getUsers);
-router.post("/users/update-role", requireLogin, requireRole("superadmin"), adminController.updateRole);
-router.post("/users/toggle-status", requireLogin, requireRole("superadmin"), adminController.toggleStatus);
-
-router.post("/update/:id", adminController.updateUserRole);
-router.post("/toggle-status/:id", adminController.toggleUserStatus);
-
-router.post("/update/:id", adminController.updateUserRole);
+router.get("/dashboard", requireLogin, checkRole("superadmin"), adminController.getDashboard);
+router.get("/users", requireLogin, checkRole("superadmin"), adminController.getUsers);
+router.get("/users/edit/:id", requireLogin, checkRole("superadmin"), adminController.getEditUser);
+router.post("/users/edit/:id", requireLogin, checkRole("superadmin"), adminController.postEditUser);
+router.post("/users/delete/:id", requireLogin, checkRole("superadmin"), adminController.deleteUser);
 
 module.exports = router;

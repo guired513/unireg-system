@@ -7,13 +7,13 @@
       <div class="collapse navbar-collapse" id="navbarContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <% if (user && user.role === 'superadmin') { %>
-            <li class="nav-item"><a class="nav-link" href="/admin/users">User Management</a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/dashboard">User Management</a></li>
           <% } else if (user && user.role === 'student') { %>
             <li class="nav-item"><a class="nav-link" href="/student/enroll">My Enrollment</a></li>
           <% } else if (user && user.role === 'faculty') { %>
             <li class="nav-item"><a class="nav-link" href="/faculty/sections">My Classes</a></li>
           <% } else if (user && user.role === 'registrar') { %>
-            <li class="nav-item"><a class="nav-link" href="/registrar/schedule">Scheduling</a></li>
+            <li class="nav-item"><a class="nav-link" href="/registrar/scheduling">Scheduling</a></li>
           <% } %>
         </ul>
         <ul class="navbar-nav">

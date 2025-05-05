@@ -1,94 +1,58 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+// app.js
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-
-
-var app = express();
-
+const express = require("express");
 const session = require("express-session");
 const flash = require("express-flash");
-const MongoStore = require("connect-mongo");
-require("dotenv").config();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-app.use(
-  session({
-    secret: "supersecretkey",
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      collectionName: "sessions",
-    }),
-    cookie: { maxAge: 1000 * 60 * 60 * 24 }, // 1 day
-  })
-);
-
-app.use(flash());
-
+const mongoose = require("mongoose");
+const path = require("path");
+const app = express();
 const expressLayouts = require("express-ejs-layouts");
+
+// ENV or hardcoded for dev
+mongoose.connect("mongodb://localhost:27017/unireg-system")
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection failed", err));
+
+// Middlewares
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
+app.use(flash());
 app.use(expressLayouts);
-app.set("layout extractScripts", true);
+
+// View engine setup
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 app.set("layout", "layouts/layout");
 
-// Make user globally available to EJS
+// Global user for navbar access
 app.use((req, res, next) => {
-  res.locals.user = req.session.user;
+  res.locals.user = req.session.user || null;
   next();
 });
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-const authRoutes = require("./routes/auth");
-app.use("/", authRoutes);
-
+// Routes
+const authController = require("./controllers/authController");
 const adminRoutes = require("./routes/admin");
-app.use("/admin", adminRoutes);
-
+const registrarRoutes = require("./routes/registrar");
+const facultyRoutes = require("./routes/faculty");
 const studentRoutes = require("./routes/student");
+
+app.get("/", (req, res) => res.render("index", { title: "Welcome to UniReg" }));
+app.get("/login", authController.getLogin);
+app.post("/login", authController.postLogin);
+app.get("/register", authController.getRegister);
+app.post("/register", authController.postRegister);
+app.get("/logout", authController.logout);
+
+app.use("/admin", adminRoutes);
+app.use("/registrar", registrarRoutes);
+app.use("/faculty", facultyRoutes);
 app.use("/student", studentRoutes);
 
-
-
-
-const registrarRoutes = require("./routes/registrar");
-app.use("/registrar", registrarRoutes);
-
-const indexRoutes = require("./routes/index");
-app.use("/", indexRoutes);
-
-
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+// 404 handler
+app.use((req, res) => {
+  res.status(404).send("Not Found");
 });
 
 module.exports = app;

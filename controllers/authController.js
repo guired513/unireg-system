@@ -1,8 +1,34 @@
+// controllers/authController.js
+
 const User = require("../models/User");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 exports.getLogin = (req, res) => {
   res.render("login", { title: "Login" });
+};
+
+exports.postLogin = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) return res.redirect("/login");
+
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.redirect("/login");
+
+  req.session.user = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  if (user.role === "superadmin") return res.redirect("/admin/dashboard");
+  if (user.role === "registrar") return res.redirect("/registrar/dashboard");
+  if (user.role === "faculty") return res.redirect("/faculty/dashboard");
+  if (user.role === "student") return res.redirect("/student/dashboard");
+
+  res.redirect("/");
 };
 
 exports.getRegister = (req, res) => {
@@ -10,72 +36,18 @@ exports.getRegister = (req, res) => {
 };
 
 exports.postRegister = async (req, res) => {
-  const { name, email, password, confirmPassword } = req.body;
+  const { name, email, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-  if (password !== confirmPassword) {
-    req.flash("error", "Passwords do not match.");
-    return res.redirect("/register");
-  }
+  const newUser = new User({
+    name,
+    email,
+    password: hashedPassword,
+    role: "student", // default role
+  });
 
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      req.flash("error", "Email already registered.");
-      return res.redirect("/register");
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // ✅ Place this block here:
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-      role: "student", // 🔐 force default role
-    });
-
-    await newUser.save();
-
-    req.flash("success", "Registered successfully. Please log in.");
-    res.redirect("/login");
-
-  } catch (err) {
-    console.error(err);
-    req.flash("error", "Registration failed.");
-    res.redirect("/register");
-  }
-};
-
-exports.postLogin = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    req.flash("error", "Invalid credentials");
-    return res.redirect("/login");
-  }
-
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
-    req.flash("error", "Invalid credentials");
-    return res.redirect("/login");
-  }
-
-  // ✅ Store the user in session
-  req.session.user = user;
-
-  // ✅ Redirect based on role
-  if (user.role === "superadmin") {
-    return res.redirect("/admin/dashboard");
-  } else if (user.role === "faculty") {
-    return res.redirect("/faculty/sections");
-  } else if (user.role === "student") {
-    return res.redirect("/student/enroll");
-  } else if (user.role === "registrar") {
-    return res.redirect("/registrar/dashboard");
-  } else {
-    return res.redirect("/"); // default fallback
-  }
+  await newUser.save();
+  res.redirect("/login");
 };
 
 exports.logout = (req, res) => {
