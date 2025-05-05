@@ -26,12 +26,26 @@ app.use(session({
 }));
 app.use(flash());
 
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    next();
+  });
+
+  const expressLayouts = require("express-ejs-layouts");
+  app.use(expressLayouts);
+  app.set("layout", "layouts/layout"); // Set default layout
+
+
 // ROUTES
 const indexRoutes = require("./routes/index");
 app.use("/", indexRoutes);
 
 // 404 fallback
 app.use((req, res) => res.status(404).render("404"));
+
+
+const authRoutes = require("./routes/auth");
+app.use("/", authRoutes);
 
 // Export app
 module.exports = app;
