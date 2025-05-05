@@ -37,6 +37,9 @@ app.use((req, res, next) => {
 
 
 // ROUTES
+const authRoutes = require("./routes/auth");
+app.use("/", authRoutes);
+
 const indexRoutes = require("./routes/index");
 app.use("/", indexRoutes);
 
@@ -44,8 +47,7 @@ app.use("/", indexRoutes);
 app.use((req, res) => res.status(404).render("404"));
 
 
-const authRoutes = require("./routes/auth");
-app.use("/", authRoutes);
+
 
 // Export app
 module.exports = app;
