@@ -1,59 +1,82 @@
-<div class="container-fluid">
-  <h1 class="mb-4">Superadmin Dashboard</h1>
-  <div class="row">
-    <div class="col-md-3">
-      <div class="card text-bg-primary mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Total Users</h5>
-          <p class="card-text fs-4"><%= totalUsers %></p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-bg-success mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Active Students</h5>
-          <p class="card-text fs-4"><%= totalStudents %></p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-bg-warning mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Faculty Members</h5>
-          <p class="card-text fs-4"><%= totalFaculty %></p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-bg-info mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Registrars</h5>
-          <p class="card-text fs-4"><%= totalRegistrars %></p>
-        </div>
+<% layout('layouts/layout') %>
+
+<h1 class="mb-4">Admin Dashboard</h1>
+
+<div class="row g-4">
+  <!-- Summary Cards -->
+  <div class="col-md-3">
+    <div class="card shadow-sm text-bg-primary">
+      <div class="card-body">
+        <h5 class="card-title">Total Users</h5>
+        <p class="card-text fs-3"><%= stats.totalUsers %></p>
       </div>
     </div>
   </div>
-  <div class="row mt-4">
-    <div class="col-md-12">
-      <div class="card p-4 shadow-sm">
-        <h5 class="mb-3">User Overview</h5>
-        <canvas id="userChart" height="100"></canvas>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm text-bg-success">
+      <div class="card-body">
+        <h5 class="card-title">Students</h5>
+        <p class="card-text fs-3"><%= stats.totalStudents %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm text-bg-warning">
+      <div class="card-body">
+        <h5 class="card-title">Faculty</h5>
+        <p class="card-text fs-3"><%= stats.totalFaculty %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card shadow-sm text-bg-dark">
+      <div class="card-body">
+        <h5 class="card-title">Registrars</h5>
+        <p class="card-text fs-3"><%= stats.totalRegistrars %></p>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Charts -->
+<div class="row mt-5">
+  <div class="col-md-6">
+    <h5>User Distribution</h5>
+    <canvas id="roleChart" height="200"></canvas>
+  </div>
+  <div class="col-md-6">
+    <h5>Monthly Registrations</h5>
+    <canvas id="monthlyChart" height="200"></canvas>
+  </div>
+</div>
+
+<!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const ctx = document.getElementById('userChart').getContext('2d');
-  const userChart = new Chart(ctx, {
-    type: 'bar',
+  const roleChart = new Chart(document.getElementById('roleChart'), {
+    type: 'doughnut',
     data: {
-      labels: ['Students', 'Faculty', 'Registrars'],
+      labels: ['Students', 'Faculty', 'Registrars', 'Superadmins'],
       datasets: [{
-        label: 'User Distribution',
-        data: [<%= totalStudents %>, <%= totalFaculty %>, <%= totalRegistrars %>],
-        backgroundColor: ['#0d6efd', '#198754', '#ffc107']
+        data: [<%= stats.totalStudents %>, <%= stats.totalFaculty %>, <%= stats.totalRegistrars %>, 1],
+        backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#212529']
+      }]
+    }
+  });
+
+  const monthlyChart = new Chart(document.getElementById('monthlyChart'), {
+    type: 'line',
+    data: {
+      labels: <%- JSON.stringify(stats.monthLabels) %>,
+      datasets: [{
+        label: 'New Registrations',
+        data: <%- JSON.stringify(stats.monthCounts) %>,
+        borderColor: '#0d6efd',
+        fill: false,
+        tension: 0.4
       }]
     }
   });

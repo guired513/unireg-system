@@ -1,58 +1,66 @@
-// app.js
 
+require("dotenv").config();
 const express = require("express");
-const session = require("express-session");
-const flash = require("express-flash");
-const mongoose = require("mongoose");
 const path = require("path");
-const app = express();
+const logger = require("morgan");
+const mongoose = require("mongoose");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const flash = require("express-flash");
+const methodOverride = require("method-override");
 const expressLayouts = require("express-ejs-layouts");
 
-// ENV or hardcoded for dev
-mongoose.connect("mongodb://localhost:27017/unireg-system")
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection failed", err));
+const app = express();
 
-// Middlewares
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
-app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
-app.use(flash());
-app.use(expressLayouts);
+// Connect DB using .env connection string
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB Atlas connected"))
+  .catch((err) => console.log("❌ MongoDB connection error", err));
 
-// View engine setup
-app.set("view engine", "ejs");
+// View Engine
 app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+app.use(expressLayouts);
 app.set("layout", "layouts/layout");
 
-// Global user for navbar access
+// Middleware
+app.use(logger("dev"));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secretkey",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+  })
+);
+app.use(flash());
+
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
 });
 
 // Routes
-const authController = require("./controllers/authController");
+const indexRoutes = require("./routes/index");
+const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
-const registrarRoutes = require("./routes/registrar");
-const facultyRoutes = require("./routes/faculty");
-const studentRoutes = require("./routes/student");
 
-app.get("/", (req, res) => res.render("index", { title: "Welcome to UniReg" }));
-app.get("/login", authController.getLogin);
-app.post("/login", authController.postLogin);
-app.get("/register", authController.getRegister);
-app.post("/register", authController.postRegister);
-app.get("/logout", authController.logout);
-
+app.use("/", indexRoutes);
+app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
-app.use("/registrar", registrarRoutes);
-app.use("/faculty", facultyRoutes);
-app.use("/student", studentRoutes);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).send("Not Found");
+  res.status(404).render("404", { layout: "layouts/layout" });
 });
 
 module.exports = app;

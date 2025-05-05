@@ -1,29 +1,37 @@
-// controllers/adminController.js
+// At the top if not already present
+const User = require('../models/User');
 
-const User = require("../models/User");
+// ADD THIS inside adminController.js
+exports.getDashboard = async (req, res) => {
+  const totalUsers = await User.countDocuments();
+  const totalStudents = await User.countDocuments({ role: "student" });
+  const totalFaculty = await User.countDocuments({ role: "faculty" });
+  const totalRegistrars = await User.countDocuments({ role: "registrar" });
 
-exports.getDashboard = (req, res) => {
-  res.render("admin/dashboard", { title: "Superadmin Dashboard" });
-};
+  const last6Months = [...Array(6)].map((_, i) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - (5 - i));
+    return d;
+  });
 
-exports.getUsers = async (req, res) => {
-  const users = await User.find({});
-  res.render("admin/users", { title: "User Management", users });
-};
+  const monthLabels = last6Months.map(d => d.toLocaleString('default', { month: 'short' }));
+  const monthCounts = await Promise.all(
+    last6Months.map(async d => {
+      const start = new Date(d.getFullYear(), d.getMonth(), 1);
+      const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+      return await User.countDocuments({ createdAt: { $gte: start, $lte: end } });
+    })
+  );
 
-exports.getEditUser = async (req, res) => {
-  const user = await User.findById(req.params.id);
-  if (!user) return res.status(404).send("User not found");
-  res.render("admin/editUser", { title: "Edit User", user });
-};
-
-exports.postEditUser = async (req, res) => {
-  const { name, email, role } = req.body;
-  await User.findByIdAndUpdate(req.params.id, { name, email, role });
-  res.redirect("/admin/users");
-};
-
-exports.deleteUser = async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.redirect("/admin/users");
+  res.render("admin/dashboard", {
+    user: req.user,
+    stats: {
+      totalUsers,
+      totalStudents,
+      totalFaculty,
+      totalRegistrars,
+      monthLabels,
+      monthCounts
+    }
+  });
 };

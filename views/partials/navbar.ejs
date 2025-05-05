@@ -1,30 +1,34 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">UniReg</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <% if (user && user.role === 'superadmin') { %>
-            <li class="nav-item"><a class="nav-link" href="/admin/dashboard">User Management</a></li>
-          <% } else if (user && user.role === 'student') { %>
-            <li class="nav-item"><a class="nav-link" href="/student/enroll">My Enrollment</a></li>
-          <% } else if (user && user.role === 'faculty') { %>
-            <li class="nav-item"><a class="nav-link" href="/faculty/sections">My Classes</a></li>
-          <% } else if (user && user.role === 'registrar') { %>
-            <li class="nav-item"><a class="nav-link" href="/registrar/scheduling">Scheduling</a></li>
-          <% } %>
-        </ul>
-        <ul class="navbar-nav">
-          <% if (user) { %>
-            <li class="nav-item"><a class="nav-link" href="#">Welcome, <%= user.name %></a></li>
-            <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-          <% } else { %>
-            <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
-            <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-          <% } %>
-        </ul>
-      </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">UniReg</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <% if (user && user.role === 'superadmin') { %>
+          <li class="nav-item"><a class="nav-link" href="/admin">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/users">Users</a></li>
+        <% } else if (user && user.role === 'registrar') { %>
+          <li class="nav-item"><a class="nav-link" href="/registrar/dashboard">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/registrar/scheduling">Scheduling</a></li>
+        <% } else if (user && user.role === 'faculty') { %>
+          <li class="nav-item"><a class="nav-link" href="/faculty/dashboard">Dashboard</a></li>
+        <% } else if (user && user.role === 'student') { %>
+          <li class="nav-item"><a class="nav-link" href="/student/dashboard">Dashboard</a></li>
+        <% } %>
+      </ul>
+      <ul class="navbar-nav">
+        <% if (!user) { %>
+          <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+        <% } else { %>
+          <li class="nav-item">
+            <span class="navbar-text text-light me-2"><%= user.name %> (<%= user.role %>)</span>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+        <% } %>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
